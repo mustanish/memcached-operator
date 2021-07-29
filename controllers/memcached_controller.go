@@ -96,7 +96,7 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	}
 
 	// Ensure the deployment size is the same as the spec
-	size := memcached.Spec.Size
+	size := memcached.Spec.Constant.Size
 	if *found.Spec.Replicas != size {
 		found.Spec.Replicas = &size
 		err = r.Update(ctx, found)
@@ -139,7 +139,7 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 // deploymentForMemcached returns a memcached Deployment object
 func (r *MemcachedReconciler) deploymentForMemcached(m *cachev1alpha1.Memcached) *appsv1.Deployment {
 	ls := labelsForMemcached(m.Name)
-	replicas := m.Spec.Size
+	replicas := m.Spec.Constant.Size
 
 	dep := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -157,7 +157,7 @@ func (r *MemcachedReconciler) deploymentForMemcached(m *cachev1alpha1.Memcached)
 				},
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{{
-						Image:   "memcached:1.4.36-alpine",
+						Image:   m.Spec.Image,
 						Name:    "memcached",
 						Command: []string{"memcached", "-m=64", "-o", "modern", "-v"},
 						Ports: []corev1.ContainerPort{{

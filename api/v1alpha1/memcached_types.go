@@ -25,6 +25,18 @@ import (
 
 // MemcachedSpec defines the desired state of Memcached
 type MemcachedSpec struct {
+	// +optional
+	// +kubebuilder:default="memcached:1.4.36-alpine"
+	// Image is the image we want to use in the deployment
+	Image string `json:"image"`
+
+	// Constant specifies all the openshift constants of the Operator
+	Constant OperatorConstant `json:"constant"`
+}
+
+// OperatorConstant defines all the openshift constants of the Operator
+type OperatorConstant struct {
+	// +kubebuilder:default=1
 	// +kubebuilder:validation:Minimum=0
 	// Size is the size of the memcached deployment
 	Size int32 `json:"size"`
